@@ -2,9 +2,9 @@ package net.vydaeon.cashregister.service;
 
 import net.vydaeon.cashregister.dao.ItemDao;
 import net.vydaeon.cashregister.domain.Item;
-import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -31,12 +31,8 @@ public class ItemServiceImplTest {
     @Mock
     private List<Item> items;
 
+    @InjectMocks
     private ItemServiceImpl itemService;
-
-    @Before
-    public void before() {
-        itemService = new ItemServiceImpl(itemDao);
-    }
 
     @Test
     public void getItems() {

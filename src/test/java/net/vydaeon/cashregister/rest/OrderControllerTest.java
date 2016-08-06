@@ -1,7 +1,7 @@
 package net.vydaeon.cashregister.rest;
 
-import net.vydaeon.cashregister.domain.Item;
-import net.vydaeon.cashregister.service.ItemService;
+import net.vydaeon.cashregister.domain.Order;
+import net.vydaeon.cashregister.service.OrderService;
 import org.junit.Rule;
 import org.junit.Test;
 import org.mockito.InjectMocks;
@@ -9,34 +9,34 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
-import java.util.List;
-
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.when;
 
 /**
- * Unit tests for {@link ItemController}.
+ * Unit tests for {@link OrderController}.
  *
  * @author Brad Bottjen
  */
-public class ItemControllerTest {
+public class OrderControllerTest {
 
     @Rule
     public MockitoRule mockitoRule = MockitoJUnit.rule();
 
     @Mock
-    private ItemService itemService;
+    private OrderService orderService;
 
     @Mock
-    private List<Item> items;
+    private Order savedOrder;
 
     @InjectMocks
-    private ItemController itemController;
+    private OrderController orderController;
 
     @Test
-    public void getItems() {
-        when(itemService.getItems()).thenReturn(items);
-        assertThat(itemController.getItems(), is(items));
+    public void createOrder() {
+        when(orderService.createOrder()).thenReturn(savedOrder);
+
+        Order order = orderController.createOrder();
+        assertThat(order, is(savedOrder));
     }
 }
