@@ -15,4 +15,13 @@ public interface OrderService {
      * @return the newly-created {@link Order}.
      */
     Order createOrder();
+
+    /**
+     * Adds an item to an existing order.
+     *
+     * @param orderId  The order ID.
+     * @param itemName The item name.
+     * @return the {@link Order} with the item added and totals updated.
+     */
+    Order addItem(String orderId, String itemName);
 }

@@ -1,5 +1,6 @@
 package net.vydaeon.cashregister.dao;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
@@ -9,10 +10,12 @@ import org.springframework.stereotype.Component;
  * @author Brad Bottjen
  */
 @Component
-@ConfigurationProperties("salesTaxRate")
 class SalesTaxRateProperties {
 
+    @Value("${salesTaxRate.description}")
     private String description;
+
+    @Value("${salesTaxRate.rate}")
     private double rate;
 
     /**

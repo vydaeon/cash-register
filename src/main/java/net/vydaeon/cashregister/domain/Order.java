@@ -6,6 +6,7 @@ import org.springframework.data.couchbase.core.mapping.Document;
 
 import java.math.BigDecimal;
 import java.time.Instant;
+import java.util.List;
 
 /**
  * Represents an order made via the cash register application.
@@ -32,6 +33,8 @@ public class Order {
 
     @Field
     private BigDecimal grandTotal;
+
+    private List<OrderLineItem> lineItems;
 
     /**
      * @return the order ID.
@@ -127,5 +130,21 @@ public class Order {
      */
     public void setGrandTotal(BigDecimal grandTotal) {
         this.grandTotal = grandTotal;
+    }
+
+    /**
+     * @return the {@link OrderLineItem}s.
+     */
+    public List<OrderLineItem> getLineItems() {
+        return lineItems;
+    }
+
+    /**
+     * Sets the {@link OrderLineItem}s.
+     *
+     * @param lineItems The {@link OrderLineItem}s.
+     */
+    public void setLineItems(List<OrderLineItem> lineItems) {
+        this.lineItems = lineItems;
     }
 }
