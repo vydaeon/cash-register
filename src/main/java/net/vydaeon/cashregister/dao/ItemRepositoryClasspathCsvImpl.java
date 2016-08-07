@@ -13,12 +13,12 @@ import java.util.List;
 import static java.nio.charset.StandardCharsets.UTF_8;
 
 /**
- * {@link ItemDao} implementation using a CSV file on the classpath.
+ * {@link ItemRepository} implementation using a CSV file on the classpath.
  *
  * @author Brad Bottjen
  */
 @Repository
-class ItemDaoClasspathCsvImpl implements ItemDao {
+class ItemRepositoryClasspathCsvImpl implements ItemRepository {
 
     @Override
     public List<Item> getItems() {

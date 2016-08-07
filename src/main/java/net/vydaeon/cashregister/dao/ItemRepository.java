@@ -9,7 +9,7 @@ import java.util.List;
  *
  * @author Brad Bottjen
  */
-public interface ItemDao {
+public interface ItemRepository {
 
     /**
      * @return a {@link List} of all {@link Item}s.

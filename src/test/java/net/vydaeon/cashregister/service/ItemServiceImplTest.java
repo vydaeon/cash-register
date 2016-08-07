@@ -1,6 +1,6 @@
 package net.vydaeon.cashregister.service;
 
-import net.vydaeon.cashregister.dao.ItemDao;
+import net.vydaeon.cashregister.dao.ItemRepository;
 import net.vydaeon.cashregister.domain.Item;
 import org.junit.Rule;
 import org.junit.Test;
@@ -26,7 +26,7 @@ public class ItemServiceImplTest {
     public MockitoRule mockitoRule = MockitoJUnit.rule();
 
     @Mock
-    private ItemDao itemDao;
+    private ItemRepository itemRepository;
 
     @Mock
     private List<Item> items;
@@ -36,7 +36,7 @@ public class ItemServiceImplTest {
 
     @Test
     public void getItems() {
-        when(itemDao.getItems()).thenReturn(items);
+        when(itemRepository.getItems()).thenReturn(items);
         assertThat(itemService.getItems(), is(items));
     }
 }

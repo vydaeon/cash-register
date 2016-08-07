@@ -1,6 +1,6 @@
 package net.vydaeon.cashregister.service;
 
-import net.vydaeon.cashregister.dao.ItemDao;
+import net.vydaeon.cashregister.dao.ItemRepository;
 import net.vydaeon.cashregister.domain.Item;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -17,15 +17,15 @@ class ItemServiceImpl implements ItemService {
 
     //NOTE: this services isn't really needed now, but serves as a point for later expansion
 
-    private final ItemDao itemDao;
+    private final ItemRepository itemRepository;
 
     @Autowired
-    ItemServiceImpl(ItemDao itemDao) {
-        this.itemDao = itemDao;
+    ItemServiceImpl(ItemRepository itemRepository) {
+        this.itemRepository = itemRepository;
     }
 
     @Override
     public List<Item> getItems() {
-        return itemDao.getItems();
+        return itemRepository.getItems();
     }
 }

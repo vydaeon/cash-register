@@ -16,13 +16,13 @@ import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertThat;
 
 /**
- * Unit tests for {@link ItemDaoClasspathCsvImpl}
+ * Unit tests for {@link ItemRepositoryClasspathCsvImpl}
  *
  * @author Brad Bottjen
  */
-public class ItemDaoClasspathCsvImplTest {
+public class ItemRepositoryClasspathCsvImplTest {
 
-    private ItemDaoClasspathCsvImpl dao = new ItemDaoClasspathCsvImpl();
+    private ItemRepositoryClasspathCsvImpl dao = new ItemRepositoryClasspathCsvImpl();
 
     @Test
     public void getItems() throws Exception {
