@@ -3,13 +3,11 @@ package net.vydaeon.cashregister.service;
 import net.vydaeon.cashregister.dao.ItemRepository;
 import net.vydaeon.cashregister.dao.OrderRepository;
 import net.vydaeon.cashregister.dao.SalesTaxRateRepository;
-import net.vydaeon.cashregister.domain.Item;
-import net.vydaeon.cashregister.domain.Order;
-import net.vydaeon.cashregister.domain.OrderLineItem;
-import net.vydaeon.cashregister.domain.SalesTaxRate;
+import net.vydaeon.cashregister.domain.*;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.invocation.InvocationOnMock;
@@ -39,9 +37,14 @@ public class OrderServiceImplTest {
     private static final double TAX_RATE = 0.08;
     private static final String NEW_ITEM_NAME = "new item name";
     private static final BigDecimal NEW_ITEM_PRICE = new BigDecimal("2.34");
+    private static final BigDecimal TENDER_AMOUNT = new BigDecimal("2");
+    private static final int ORDER_NUMBER = 12;
 
     @Rule
     public MockitoRule mockitoRule = MockitoJUnit.rule();
+
+    @Rule
+    public ExpectedException expectedException = ExpectedException.none();
 
     @Mock
     private OrderRepository orderRepository;
@@ -51,6 +54,9 @@ public class OrderServiceImplTest {
 
     @Mock
     private SalesTaxRateRepository salesTaxRateRepository;
+
+    @Mock
+    private OrderNumberService orderNumberService;
 
     @Mock
     private Order savedOrder;
@@ -111,6 +117,24 @@ public class OrderServiceImplTest {
         assertThat(order, is(savedOrder));
     }
 
+    @Test
+    public void recordTender() {
+        mockExistingOrder();
+        when(orderNumberService.getNextOrderNumber()).thenReturn(ORDER_NUMBER);
+        when(orderRepository.save(any(Order.class))).thenAnswer(this::verifyOrderWithTenderRecord);
+        startInstant = Instant.now();
+
+        Order order = orderService.recordTender(ORDER_ID, TENDER_AMOUNT);
+        assertThat(order, is(savedOrder));
+    }
+
+    @Test
+    public void recordTender_when_TenderRecord_already_exists() {
+        mockExistingOrderWithTenderRecord();
+        expectedException.expect(IllegalStateException.class);
+        orderService.recordTender(ORDER_ID, TENDER_AMOUNT);
+    }
+
     private void mockExistingOrder() {
         OrderLineItem lineItem = new OrderLineItem();
         lineItem.setName(EXISTING_ITEM_NAME);
@@ -159,6 +183,13 @@ public class OrderServiceImplTest {
         order.setSubTotal(BigDecimal.ZERO);
         order.setTotalTax(BigDecimal.ZERO);
         order.setGrandTotal(BigDecimal.ZERO);
+        when(orderRepository.findOne(ORDER_ID)).thenReturn(order);
+    }
+
+    private void mockExistingOrderWithTenderRecord() {
+        Order order = new Order();
+        order.setTenderRecord(new TenderRecord());
+        order.setOrderNumber(ORDER_NUMBER);
         when(orderRepository.findOne(ORDER_ID)).thenReturn(order);
     }
 
@@ -253,5 +284,21 @@ public class OrderServiceImplTest {
     private Order verifyOrderWithExistingItemRemoved(InvocationOnMock invocation) {
         //existingOrderWithMultipleItems minus existingItem is emptyOrderWithNewItemAdded
         return verifyEmptyOrderWithNewItemAdded(invocation);
+    }
+
+    private Order verifyOrderWithTenderRecord(InvocationOnMock invocation) {
+        Instant endInstant = Instant.now();
+        Order order = invocation.getArgumentAt(0, Order.class);
+        assertThat(order, is(notNullValue()));
+        assertThat(order.getOrderNumber(), is(ORDER_NUMBER));
+
+        TenderRecord tenderRecord = order.getTenderRecord();
+        assertThat(tenderRecord, is(notNullValue()));
+        assertThat(tenderRecord.getAmountTendered(), is(TENDER_AMOUNT));
+        assertThat(tenderRecord.getChangeGiven(), is(new BigDecimal("0.68")));
+        assertThat(tenderRecord.getTimestamp(), is(notNullValue()));
+        assertThat(tenderRecord.getTimestamp(), is(greaterThanOrEqualTo(startInstant)));
+        assertThat(tenderRecord.getTimestamp(), is(lessThanOrEqualTo(endInstant)));
+        return savedOrder;
     }
 }

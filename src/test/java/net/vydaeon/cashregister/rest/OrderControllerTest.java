@@ -8,10 +8,17 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.springframework.http.ResponseEntity;
+
+import java.math.BigDecimal;
 
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.when;
+import static org.springframework.http.HttpStatus.CONFLICT;
+import static org.springframework.http.HttpStatus.OK;
 
 /**
  * Unit tests for {@link OrderController}.
@@ -58,5 +65,30 @@ public class OrderControllerTest {
 
         Order order = orderController.removeItem(orderId, itemName);
         assertThat(order, is(savedOrder));
+    }
+
+    @Test
+    public void recordTender() {
+        String orderId = "order ID";
+        BigDecimal amountTendered = new BigDecimal("11.23");
+        when(orderService.recordTender(orderId, amountTendered)).thenReturn(savedOrder);
+
+        ResponseEntity<?> responseEntity = orderController.recordTender(orderId, amountTendered);
+        assertThat(responseEntity, is(notNullValue()));
+        assertThat(responseEntity.getStatusCode(), is(OK));
+        assertThat(responseEntity.getBody(), is(savedOrder));
+    }
+
+    @Test
+    public void recordTender_when_IllegalStateException() {
+        String errorMessage = "TEST TEST TEST";
+        when(orderService.recordTender(any(), any()))
+                .thenThrow(new IllegalStateException(errorMessage));
+
+        ResponseEntity<?> responseEntity = orderController.recordTender(
+                "order ID", new BigDecimal("11.23"));
+        assertThat(responseEntity, is(notNullValue()));
+        assertThat(responseEntity.getStatusCode(), is(CONFLICT));
+        assertThat(responseEntity.getBody(), is(errorMessage));
     }
 }

@@ -34,7 +34,11 @@ public class Order {
     @Field
     private BigDecimal grandTotal;
 
+    @Field
     private List<OrderLineItem> lineItems;
+
+    @Field
+    private TenderRecord tenderRecord;
 
     /**
      * @return the order ID.
@@ -146,5 +150,21 @@ public class Order {
      */
     public void setLineItems(List<OrderLineItem> lineItems) {
         this.lineItems = lineItems;
+    }
+
+    /**
+     * @return the {@link TenderRecord}.
+     */
+    public TenderRecord getTenderRecord() {
+        return tenderRecord;
+    }
+
+    /**
+     * Sets the {@link TenderRecord}.
+     *
+     * @param tenderRecord The {@link TenderRecord}.
+     */
+    public void setTenderRecord(TenderRecord tenderRecord) {
+        this.tenderRecord = tenderRecord;
     }
 }

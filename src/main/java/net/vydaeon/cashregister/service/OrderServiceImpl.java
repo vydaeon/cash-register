@@ -6,6 +6,7 @@ import net.vydaeon.cashregister.dao.SalesTaxRateRepository;
 import net.vydaeon.cashregister.domain.Item;
 import net.vydaeon.cashregister.domain.Order;
 import net.vydaeon.cashregister.domain.OrderLineItem;
+import net.vydaeon.cashregister.domain.TenderRecord;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -29,13 +30,15 @@ class OrderServiceImpl implements OrderService {
     private final OrderRepository orderRepository;
     private final ItemRepository itemRepository;
     private final SalesTaxRateRepository salesTaxRateRepository;
+    private final OrderNumberService orderNumberService;
 
     @Autowired
     OrderServiceImpl(OrderRepository orderRepository, ItemRepository itemRepository,
-                     SalesTaxRateRepository salesTaxRateRepository) {
+                     SalesTaxRateRepository salesTaxRateRepository, OrderNumberService orderNumberService) {
         this.orderRepository = orderRepository;
         this.itemRepository = itemRepository;
         this.salesTaxRateRepository = salesTaxRateRepository;
+        this.orderNumberService = orderNumberService;
     }
 
     @Override
@@ -70,6 +73,23 @@ class OrderServiceImpl implements OrderService {
         OrderLineItem lineItem = findOrderLineItem(lineItems, itemName).get();
         lineItems.remove(lineItem);
         increaseOrderAmounts(order, lineItem.getExtendedPrice().negate());
+        return orderRepository.save(order);
+    }
+
+    @Override
+    public Order recordTender(String orderId, BigDecimal amountTendered) {
+        Order order = orderRepository.findOne(orderId);
+        if (order.getTenderRecord() != null) {
+            throw new IllegalStateException("payment already tendered");
+        }
+
+        TenderRecord tenderRecord = new TenderRecord();
+        BigDecimal changeDue = amountTendered.subtract(order.getGrandTotal());
+        tenderRecord.setAmountTendered(amountTendered);
+        tenderRecord.setChangeGiven(changeDue);
+        tenderRecord.setTimestamp(Instant.now());
+        order.setTenderRecord(tenderRecord);
+        order.setOrderNumber(orderNumberService.getNextOrderNumber());
         return orderRepository.save(order);
     }
 
