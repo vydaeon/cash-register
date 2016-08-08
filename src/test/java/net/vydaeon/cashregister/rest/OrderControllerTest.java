@@ -49,4 +49,14 @@ public class OrderControllerTest {
         Order order = orderController.addItem(orderId, itemName);
         assertThat(order, is(savedOrder));
     }
+
+    @Test
+    public void removeItem() {
+        String orderId = "order ID";
+        String itemName = "item name";
+        when(orderService.removeItem(orderId, itemName)).thenReturn(savedOrder);
+
+        Order order = orderController.removeItem(orderId, itemName);
+        assertThat(order, is(savedOrder));
+    }
 }

@@ -102,6 +102,15 @@ public class OrderServiceImplTest {
         assertThat(order, is(savedOrder));
     }
 
+    @Test
+    public void removeItem() {
+        mockExistingOrderWithMultipleItems();
+        when(orderRepository.save(any(Order.class))).thenAnswer(this::verifyOrderWithExistingItemRemoved);
+
+        Order order = orderService.removeItem(ORDER_ID, EXISTING_ITEM_NAME);
+        assertThat(order, is(savedOrder));
+    }
+
     private void mockExistingOrder() {
         OrderLineItem lineItem = new OrderLineItem();
         lineItem.setName(EXISTING_ITEM_NAME);
@@ -117,6 +126,31 @@ public class OrderServiceImplTest {
         order.setSubTotal(EXISTING_ITEM_PRICE);
         order.setTotalTax(new BigDecimal("0.09"));
         order.setGrandTotal(new BigDecimal("1.32"));
+        when(orderRepository.findOne(ORDER_ID)).thenReturn(order);
+    }
+
+    private void mockExistingOrderWithMultipleItems() {
+        OrderLineItem lineItem1 = new OrderLineItem();
+        lineItem1.setName(EXISTING_ITEM_NAME);
+        lineItem1.setQty(1);
+        lineItem1.setPrice(EXISTING_ITEM_PRICE);
+        lineItem1.setExtendedPrice(EXISTING_ITEM_PRICE);
+
+        OrderLineItem lineItem2 = new OrderLineItem();
+        lineItem2.setName(NEW_ITEM_NAME);
+        lineItem2.setQty(1);
+        lineItem2.setPrice(NEW_ITEM_PRICE);
+        lineItem2.setExtendedPrice(NEW_ITEM_PRICE);
+
+        List<OrderLineItem> lineItems = new ArrayList<>();
+        lineItems.add(lineItem1);
+        lineItems.add(lineItem2);
+
+        Order order = new Order();
+        order.setLineItems(lineItems);
+        order.setSubTotal(new BigDecimal("3.57"));
+        order.setTotalTax(new BigDecimal("0.28"));
+        order.setGrandTotal(new BigDecimal("3.85"));
         when(orderRepository.findOne(ORDER_ID)).thenReturn(order);
     }
 
@@ -214,5 +248,10 @@ public class OrderServiceImplTest {
         assertThat(order.getTotalTax(), is(new BigDecimal("0.18")));
         assertThat(order.getGrandTotal(), is(new BigDecimal("2.52")));
         return savedOrder;
+    }
+
+    private Order verifyOrderWithExistingItemRemoved(InvocationOnMock invocation) {
+        //existingOrderWithMultipleItems minus existingItem is emptyOrderWithNewItemAdded
+        return verifyEmptyOrderWithNewItemAdded(invocation);
     }
 }

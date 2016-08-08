@@ -63,6 +63,16 @@ class OrderServiceImpl implements OrderService {
         return orderRepository.save(order);
     }
 
+    @Override
+    public Order removeItem(String orderId, String itemName) {
+        Order order = orderRepository.findOne(orderId);
+        List<OrderLineItem> lineItems = order.getLineItems();
+        OrderLineItem lineItem = findOrderLineItem(lineItems, itemName).get();
+        lineItems.remove(lineItem);
+        increaseOrderAmounts(order, lineItem.getExtendedPrice().negate());
+        return orderRepository.save(order);
+    }
+
     private List<OrderLineItem> getOrCreateOrderLineItems(Order order) {
         List<OrderLineItem> lineItems = order.getLineItems();
         if (lineItems == null) {
@@ -82,10 +92,10 @@ class OrderServiceImpl implements OrderService {
         BigDecimal itemPrice = lineItem.getPrice();
         lineItem.setQty(lineItem.getQty() + 1);
         lineItem.setExtendedPrice(lineItem.getExtendedPrice().add(itemPrice));
-        updateOrderAmounts(order, itemPrice);
+        increaseOrderAmounts(order, itemPrice);
     }
 
-    private void updateOrderAmounts(Order order, BigDecimal itemPrice) {
+    private void increaseOrderAmounts(Order order, BigDecimal itemPrice) {
         double taxRate = salesTaxRateRepository.getSalesTaxRate().getRate();
         order.setSubTotal(order.getSubTotal().add(itemPrice));
         order.setTotalTax(order.getSubTotal()
@@ -103,7 +113,7 @@ class OrderServiceImpl implements OrderService {
         lineItem.setPrice(itemPrice);
         lineItem.setExtendedPrice(itemPrice);
         lineItems.add(lineItem);
-        updateOrderAmounts(order, itemPrice);
+        increaseOrderAmounts(order, itemPrice);
     }
 
     private Item findItem(String itemName) {

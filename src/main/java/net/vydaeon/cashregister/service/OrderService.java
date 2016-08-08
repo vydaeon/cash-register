@@ -24,4 +24,13 @@ public interface OrderService {
      * @return the {@link Order} with the item added and totals updated.
      */
     Order addItem(String orderId, String itemName);
+
+    /**
+     * Removes an item (all quantity) from an existing order.
+     *
+     * @param orderId  The order ID.
+     * @param itemName The item name.
+     * @return the {@link Order} with the item removed and totals updated.
+     */
+    Order removeItem(String orderId, String itemName);
 }
