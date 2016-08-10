@@ -1,0 +1,69 @@
+<div class="clearfix">
+    {{$ctrl.orderName()}}
+    <button class="btn btn-default pull-right" ng-click="$ctrl.createOrder()">New Order</button>
+</div>
+<div class="panel panel-default">
+    <div class="panel-body">
+        <div class="line-item"
+             ng-repeat="lineItem in $ctrl.order.lineItems"
+             ng-class="{'bg-warning': $ctrl.isCurrentItem(lineItem)}"
+             ng-click="$ctrl.setCurrentItem(lineItem)">
+            {{lineItem.qty}} {{lineItem.name}} <span class="pull-right">{{lineItem.extendedPrice}}</span>
+        </div>
+        <div>&nbsp;</div>
+        <div>Subtotal: <span class="pull-right">{{$ctrl.order.subTotal | currency}}</span></div>
+        <div>Sales Tax: <span class="pull-right">{{$ctrl.order.totalTax | currency}}</span></div>
+        <div>Grand Total: <span class="pull-right">{{$ctrl.order.grandTotal | currency}}</span></div>
+        <div ng-class="{hidden: !$ctrl.order.tenderRecord}">
+            Amount Tendered: <span class="pull-right">{{$ctrl.order.tenderRecord.amountTendered | currency}}</span>
+        </div>
+        <div ng-class="{hidden: !$ctrl.order.tenderRecord}">
+            Change Given: <span class="pull-right">{{$ctrl.order.tenderRecord.changeGiven | currency}}</span>
+        </div>
+    </div>
+</div>
+<div>
+    <button class="btn btn-danger" ng-disabled="!$ctrl.currentItem" ng-click="$ctrl.removeCurrentItem()">Void</button>
+    <button class="btn btn-primary pull-right" ng-disabled="!$ctrl.hasItems()"
+            data-toggle="modal" data-target="#tenderDialog">
+        Pay Now
+    </button>
+</div>
+<div class="modal fade" id="tenderDialog" tabindex="-1" role="dialog" aria-labelledby="tenderDialogLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <h4 class="modal-title" id="tenderDialogLabel">Tender Payment</h4>
+            </div>
+            <div class="modal-body form-horizontal">
+                <div class="form-group">
+                    <label class="col-sm-4 control-label">Amount Due:</label>
+                    <div class="col-sm-8">{{$ctrl.order.grandTotal | currency}}</div>
+                </div>
+                <div class="form-group">
+                    <label for="amtTendered" class="col-sm-4 control-label">Amount Tendered:</label>
+                    <div class="col-sm-8">
+                        <input id="amtTendered" name="amountTendered" class="form-control"
+                               type="number" min="0.00" step="0.01" size="6"
+                               ng-model="$ctrl.amtTendered"/>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-sm-4 control-label">Change Due:</label>
+                    <div class="col-sm-8">{{$ctrl.amtTendered - $ctrl.order.grandTotal | currency}}</div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal"
+                        ng-disabled="$ctrl.amtTendered < $ctrl.order.grandTotal"
+                        ng-click="$ctrl.recordTender()">
+                    Tender
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

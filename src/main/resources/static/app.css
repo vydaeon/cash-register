@@ -1,0 +1,9 @@
+.item-btn {
+    width: 18%;
+    height: 5em;
+    white-space: normal;
+}
+
+.line-item {
+    cursor: pointer;
+}

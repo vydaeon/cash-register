@@ -71,9 +71,11 @@ public class OrderControllerTest {
     public void recordTender() {
         String orderId = "order ID";
         BigDecimal amountTendered = new BigDecimal("11.23");
+        TenderDto tenderDto = new TenderDto();
+        tenderDto.setAmountTendered(amountTendered);
         when(orderService.recordTender(orderId, amountTendered)).thenReturn(savedOrder);
 
-        ResponseEntity<?> responseEntity = orderController.recordTender(orderId, amountTendered);
+        ResponseEntity<?> responseEntity = orderController.recordTender(orderId, tenderDto);
         assertThat(responseEntity, is(notNullValue()));
         assertThat(responseEntity.getStatusCode(), is(OK));
         assertThat(responseEntity.getBody(), is(savedOrder));
@@ -85,8 +87,9 @@ public class OrderControllerTest {
         when(orderService.recordTender(any(), any()))
                 .thenThrow(new IllegalStateException(errorMessage));
 
-        ResponseEntity<?> responseEntity = orderController.recordTender(
-                "order ID", new BigDecimal("11.23"));
+        TenderDto tenderDto = new TenderDto();
+        tenderDto.setAmountTendered(new BigDecimal("11.23"));
+        ResponseEntity<?> responseEntity = orderController.recordTender("order ID", tenderDto);
         assertThat(responseEntity, is(notNullValue()));
         assertThat(responseEntity.getStatusCode(), is(CONFLICT));
         assertThat(responseEntity.getBody(), is(errorMessage));

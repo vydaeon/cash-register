@@ -1,0 +1,35 @@
+<!doctype html>
+<html ng-app="cashRegisterApp">
+<head>
+    <title>Cash Register Demo</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="app.css"/>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.8/angular.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.8/angular-resource.min.js"></script>
+    <script src="app.module.js"></script>
+    <script src="core/core.module.js"></script>
+    <script src="core/items/items.module.js"></script>
+    <script src="core/items/items.service.js"></script>
+    <script src="core/order/order.module.js"></script>
+    <script src="core/order/order.service.js"></script>
+    <script src="item-list/item-list.module.js"></script>
+    <script src="item-list/item-list.component.js"></script>
+    <script src="order-detail/order-detail.module.js"></script>
+    <script src="order-detail/order-detail.component.js"></script>
+</head>
+
+<body>
+<div class="container">
+    <div class="row">
+        <div class="col-sm-4 col-md-6 col-lg-8">
+            <item-list></item-list>
+        </div>
+        <div class="col-sm-8 col-md-6 col-lg-4">
+            <order-detail></order-detail>
+        </div>
+    </div>
+</div>
+</body>
+</html>

@@ -6,8 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.math.BigDecimal;
-
 import static org.springframework.http.HttpStatus.CONFLICT;
 
 /**
@@ -31,21 +29,21 @@ class OrderController {
         return orderService.createOrder();
     }
 
-    @PostMapping("/{orderId}/items/{itemName}")
+    @PostMapping("/{orderId}/items/{itemName:.+}")
     public Order addItem(@PathVariable String orderId, @PathVariable String itemName) {
         return orderService.addItem(orderId, itemName);
     }
 
-    @DeleteMapping("/{orderId}/items/{itemName}")
+    @DeleteMapping("/{orderId}/items/{itemName:.+}")
     public Order removeItem(@PathVariable String orderId, @PathVariable String itemName) {
         return orderService.removeItem(orderId, itemName);
     }
 
     @PostMapping("/{orderId}/tender")
     public ResponseEntity<?> recordTender(@PathVariable String orderId,
-                                          @RequestParam("amountTendered") BigDecimal amountTendered) {
+                                          @RequestBody TenderDto tender) {
         try {
-            Order order = orderService.recordTender(orderId, amountTendered);
+            Order order = orderService.recordTender(orderId, tender.getAmountTendered());
             return ResponseEntity.ok(order);
         } catch (IllegalStateException ise) {
             return ResponseEntity.status(CONFLICT).body(ise.getMessage());
